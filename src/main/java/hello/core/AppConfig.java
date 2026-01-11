@@ -19,21 +19,28 @@ import hello.core.order.OrderServiceImpl;
 // 스프링 컨테이너에 등록된 객체를 스프링 빈(Bean)이라 한다.
 public class AppConfig {
     // 역할이 분명히 보임
+    // Bean memberService -> new MemoryMemberRepository()
+    // Bean orderService -> new MemoryMemberRepository()
     @Bean
     public MemberService memberService() { // 역할을 세우고 구현이 그안에 들어가도록
         // 생성자 주입
+        System.out.println("call AppConfig.memberService");
         return new MemberServiceImpl(memberRepository());
     }
 
     @Bean
-    public MemberRepository memberRepository() {
-        return new MemoryMemberRepository();
+    public OrderService orderService() {
+        System.out.println("call AppConfig.orderService");
+        return new OrderServiceImpl(memberRepository(), discountPolicy());
     }
 
     @Bean
-    public OrderService orderService() {
-        return new OrderServiceImpl(memberRepository(), discountPolicy());
+    public MemberRepository memberRepository() {
+        System.out.println("call AppConfig.memberRepository");
+        return new MemoryMemberRepository();
     }
+
+
 
     @Bean
     public DiscountPolicy discountPolicy() {
