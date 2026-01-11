@@ -71,6 +71,22 @@ for (String beanDefinitionName : beanDefinitionNames ) {
 - BeanDefinition.ROLE_APPLICATION : 일반적으로 사용자가 정의한 빈
 - BeanDefinition.ROLE_INFRASTRUCTURE : 스프링이 내부에서 사용하는 빈
 
+# 30 스프링 빈 상속관계
+- 부모 타입으로 조회하면 자식 타입도 함께 조회된다.
+- 그래서 모든 자바 객체인 최고 부모인 object 타입으로 조회하면 스프링 빈으로 등록된 모든 자바 객체가 조회된다.
+
+# 31 BeanFactory와 ApplicationContext
+- BeanFactory: 스프링 컨테이너의 최상위 인터페이스
+  - 스프링 빈을 관리하고 조회하는 역할
+- ApplicationContext: BeanFactory를 상속받은 하위 인터페이스
+  - ApplicationContext는 BeanFactory의 기능을 모두 포함하면서 부가적인 기능을 제공한다.
+
+## ApplicationContext의 부가 기능
+- 국제화 지원: 메시지 소스를 활용한 국제화 기능 제공, 다국어 지원
+- 환경변수 : 애플리케이션 실행 환경에 따른 프로파일 및 속성 관리 기능 제공
+- 이벤트 발행 및 구독: 애플리케이션 이벤트를 발행하고 구독하는 기능 제공
+- 편리한 리소스 조회: 파일, 클래스패스 등 다양한 리소스를 편리하게 조회하는 기능 제공
+
 ## Reference
 
 [스프링 빈이란 무엇인가?](https://ittrue.tistory.com/221dd)
