@@ -37,8 +37,8 @@ private 생성자를 사용하여 외부로부터 임의로 new 키워드를 사
 싱글톤 패턴을 적용하면 고객의 요청이 올 때 마다 객체를 생성하는 것이 아니라, 이미 만들어진 객체를 공유해서 효율적으로 사용할 수 있음.
 하지만, 싱글톤 패턴은 다음과 같은 수많은 문제점들을 가지고 있다.
 
-싱글톤 패턴을 구현하는 코드 자체가 많이 들어간다.
-
+## 싱글톤 단점
+- 싱글톤 패턴을 구현하는 코드 자체가 많이 들어간다.
 - 의존관계상 클라이언트가 구체 클래스에 의존하게 된다 → DIP 위반
 - 클라이언트가 구체 클래스에 의존하면서 OCP 원칙을 위반할 가능성이 높다.
 - 테스트하기 어렵다.
@@ -54,13 +54,50 @@ private 생성자를 사용하여 외부로부터 임의로 new 키워드를 사
 스프링 컨테이너를 싱글톤 컨테이너라고도 한다.
 
 - 스프링 컨테이너는 싱글턴 패턴을 적용하지 않아도, 객체 인스턴스를 싱글톤으로 관리
-- 이전에 설명한 컨테이너 생성 과정을 자세히 보면, 컨테이너는 객체를 하나만 생성해서 관리
+  - 이전에 설명한 컨테이너 생성 과정을 자세히 보면, 컨테이너는 객체를 하나만 생성해서 관리
 - 스프링 컨테이너는 싱글톤 컨테이너 역할. 이렇게 싱글톤 객체를 생성하고 관리하는 기능을 싱글톤 레지스트리라고 함
 - 스프링 컨테이너의 이런 기능 덕분에 싱글턴 패턴의 모든 단점을 해결하면서 객체를 싱글톤으로 유지할 수 있음
 - 싱글톤 패턴을 위한 지저분한 코드가 들어가지 않아도 됨
 - DIP, OCP, 테스트, private 생성자로부터 자유롭게 싱글톤을 사용할 수 있음
 
-## Refereces
+## 싱글톤 방식의 주의점
+- 여러 클라이언트가 하나의 같은 인스턴스를 공유하기 때문에 상태를 싱글톤 객체는 유지(stateful)하지 않도록 설계해야 함
+- stateless로 설계
+  - 특정 클라이언트에 의존적인 필드가 있으면 안됨
+  - 특정 클라이언트가 값을 변경할 수 있는 필드가 있으면 안
+  - 가급적 읽기 전용 필드만 사용
+  - 필요하면 자바에서 공유되지 않는 지역변수, 파라미터, ThreadLocal 사용
+
+### 상태를 유지하는 필드 때문에 발생하는 문제점 확인 예제
+* statefulService1, statefulService2가 같은 인스턴스임
+* 따라서, A사용자가 10000원 주문한 후에 B사용자가 20000원 주문하면
+* statefulService1.getPrice()를 호출하면 20000원이 나옴
+* 즉, 특정 클라이언트에 대한 상태가 아닌, 모든 클라이언트에 대한 공유 필드가 되어버림
+* 해결책: 무상태(stateless)로 설계 변경
+```java
+class StatefulServiceTest {
+
+  @Test
+  void statefulServiceSingleton() {
+    ApplicationContext ac = new AnnotationConfigApplicationContext(TestConfig.class);
+    StatefulService statefulService1 = ac.getBean(StatefulService.class);
+    StatefulService statefulService2 = ac.getBean(StatefulService.class);
+
+    //ThreadA: A사용자 10000원 주문
+    statefulService1.order("userA", 10000);
+
+    //ThreadB: B사용자 20000원 주문
+    statefulService2.order("userB", 20000);
+
+    //ThreadA: A사용자 주문 금액 조회
+    int price = statefulService1.getPrice();
+    System.out.println("price = " + price);
+
+    Assertions.assertEquals(statefulService1.getPrice(), 20000); 
+  }
+}
+```
+## References
 
 - https://ittrue.tistory.com/220
 - https://melodist.github.io/docs/Spring/SpringCore_5

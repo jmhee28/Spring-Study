@@ -1,4 +1,4 @@
-package hello.core;
+package hello.core.singleton;
 
 // static 영역에 객체 instance를 미리 하나 생성해서 적재
 // 이 객체 인스턴스가 필요하면 오직 getInstance() 메서드를 통해서만 조회할 수 있음. 이 메서드를 호출하면 항상 같은 인스턴스를 반환
@@ -12,7 +12,6 @@ public class SingletonService {
     }
     
     private SingletonService(){
-
     }
 
     public void logic(){
